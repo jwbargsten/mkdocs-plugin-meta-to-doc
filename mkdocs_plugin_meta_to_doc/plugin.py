@@ -20,18 +20,18 @@ def format_meta(meta):
     val = meta.get("vorg", None)
     if val is not None:
         val = re.sub(r"\.md$", "", val)
-        content.append(f'**[{mapping["vorg"]}](/{val})**')
+        content.append(f'<strong><a href="/{val}">{mapping["vorg"]}</a></strong>')
         content.append("")
     for key in fixed:
         val = meta.get(key, None)
         if val is not None:
             val2 = ", ".join(val.split(","))
-            content.append(f"**{mapping[key]}:** {val2}")
+            content.append(f"<strong>{mapping[key]}:</strong> {val2}")
     for key, val in meta.items():
         if key in fixed or key == "vorg":
             continue
         if val is not None:
-            content.append(f"**{key.title()}:** {val}")
+            content.append(f"<strong>{key.title()}:</strong> {val}")
     return content
 
 
@@ -49,7 +49,7 @@ class MetaToDoc(BasePlugin):
                 continue
             meta_fmt = [f"{x}<br />" for x in format_meta(page.meta)]
             if re.match(r"\s*#\s", l):
-                mdneu.append('<div markdown=1 id="sidebar-extra" class="md-nav">')
+                mdneu.append('<div id="sidebar-extra" class="md-nav">')
                 mdneu.extend(meta_fmt)
                 mdneu.append("<br />")
                 mdneu.append("<br />")
