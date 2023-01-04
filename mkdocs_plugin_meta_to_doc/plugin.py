@@ -15,20 +15,19 @@ mapping = {"datum": "Datum", "themen": "Themen", "sw": "Schlüsselwörter", "vor
 
 
 def format_meta(meta):
-    fixed = ["datum", "themen", "sw"]
+    fixed = ["datum", "vorg", "themen", "sw"]
     content = []
-    val = meta.get("vorg", None)
-    if val is not None:
-        val = re.sub(r"\.md$", "", val)
-        content.append(f'<strong><a href="/{val}">{mapping["vorg"]}</a></strong>')
-        content.append("")
     for key in fixed:
         val = meta.get(key, None)
-        if val is not None:
+        if val is not None and key == "vorg":
+            val = re.sub(r"\.md$", "", val)
+            content.append(f'<strong><a href="/{val}">{mapping["vorg"]}</a></strong>')
+            content.append("")
+        elif val is not None:
             val2 = ", ".join(val.split(","))
             content.append(f"<strong>{mapping[key]}:</strong> {val2}")
     for key, val in meta.items():
-        if key in fixed or key == "vorg":
+        if key in fixed:
             continue
         if val is not None:
             content.append(f"<strong>{key.title()}:</strong> {val}")
@@ -47,7 +46,10 @@ class MetaToDoc(BasePlugin):
             mdneu.append(l)
             if found:
                 continue
-            meta_fmt = [f"{x}<br />" for x in format_meta(page.meta)]
+            meta_fmt = [
+                f'<a href="zettel://zk/{page.file.src_uri}">Bearbeiten</a><br /><br />'
+            ] + [f"{x}<br />" for x in format_meta(page.meta)]
+
             if re.match(r"\s*#\s", l):
                 mdneu.append('<div id="sidebar-extra" class="md-nav">')
                 mdneu.extend(meta_fmt)
